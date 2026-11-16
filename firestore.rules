@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function P(c, n) { return /databases/$(db)/documents/$(c)/$(n); }
+
+    // Tulis diizinkan hanya jika, dalam batch yang sama, dokumen "gate"
+    // memuat hash PIN yang cocok dengan "secrets" milik nama tersebut.
+    function ok(n) {
+      let g = getAfter(P('gate', n)).data;
+      return g.t == request.time && g.h == getAfter(P('secrets', n)).data.h;
+    }
+
+    // Hash PIN: tidak bisa dibaca siapa pun, hanya dibuat sekali saat daftar.
+    match /secrets/{n} {
+      allow create: if !exists(P('secrets', n))
+        && request.resource.data.h is string
+        && request.resource.data.h.size() == 64;
+    }
+
+    // Dokumen "gate": bukti PIN benar. Tidak bisa dibaca.
+    match /gate/{n} {
+      allow create, update: if request.resource.data.t == request.time
+        && request.resource.data.h == getAfter(P('secrets', n)).data.h;
+    }
+
+    // Profil dan jurnal: semua orang boleh melihat, menulis butuh PIN.
+    match /profiles/{n} {
+      allow read: if true;
+      allow create: if !exists(P('profiles', n)) && ok(n);
+    }
+
+    match /entries/{id} {
+      allow read: if true;
+      allow create: if ok(request.resource.data.owner);
+      allow update: if ok(resource.data.owner)
+        && request.resource.data.owner == resource.data.owner;
+      allow delete: if ok(resource.data.owner);
+    }
+  }
+}

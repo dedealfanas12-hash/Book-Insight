@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jurnal Refleksi Membaca</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--paper:#f1f4f6;--line:#d8e0e6;--mut:#5b6877;--teal:#1f7f74;--ochre:#e9b44c;--plum:#8e3b66;--brick:#b8472f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.7 Literata,Georgia,serif}
+h1,h2,h3,h4,.dt,.rib,.btn,.ghost,.kpis b,.sp,.logo{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.15;margin:0}
+button,input,textarea{font:inherit}
+:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+.wrap{max-width:1040px;margin:auto;padding:0 20px}
+.hero{background:var(--ink);color:#fff;padding-top:18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.top div{display:flex;gap:8px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:1.05rem}
+.hero h1{font-size:clamp(2.3rem,7vw,4.5rem);font-weight:800;margin:44px 0 14px;max-width:11ch}
+.hero p{max-width:46ch;margin:0 0 8px;color:#c9d3e0}
+#sum{color:#8fa3c2;font-size:.9rem;margin-bottom:26px}
+.plank{border-bottom:12px solid #0a1226}
+.shelf{display:flex;align-items:flex-end;gap:4px;overflow-x:auto;min-height:130px}
+.sp{flex:none;width:var(--w);height:var(--h);max-height:180px;background:var(--c);border:0;border-left:3px solid #ffffff45;border-radius:3px 3px 0 0;writing-mode:vertical-rl;padding:10px 3px;font-weight:600;font-size:.78rem;cursor:pointer;overflow:hidden;text-overflow:ellipsis;transition:transform .15s}
+.sp:hover{transform:translateY(-8px)}
+.dark{background:var(--ink);padding:16px 16px 0;border-radius:8px 8px 0 0}
+main{padding-bottom:90px}
+.sec{margin:38px 0 14px;font-size:1.45rem}
+.mut,small{color:var(--mut)}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.rd{position:relative;cursor:pointer;padding-right:74px}.rd:hover{border-color:var(--ink)}
+.row{display:flex;align-items:center;gap:12px}
+.av{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:hsl(var(--h) 45% 38%);color:#fff;font:800 1.2rem "Bricolage Grotesque",sans-serif;flex:none}.av.big{width:68px;height:68px;font-size:1.9rem}
+.rib{position:absolute;top:0;right:14px;width:48px;padding:8px 0 20px;background:var(--brick);color:#fff;text-align:center;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);font-weight:800;font-size:1.3rem}
+.rib small{display:block;color:#ffd9cf;font-size:.62rem;font-weight:600}
+.dots{display:flex;gap:3px;margin:14px 0 10px}.dots i{flex:1;height:7px;border-radius:2px;background:#e3e9ee}.dots i.on{background:var(--teal)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border-left:4px solid var(--c);background:#eef2f5;padding:1px 10px;font-size:.82rem;border-radius:2px}
+.prof{display:flex;flex-wrap:wrap;gap:16px;align-items:center;position:relative;padding-right:84px}
+.prof .rib{width:56px;right:18px;font-size:1.6rem}
+.kpis{display:flex;gap:26px;flex-wrap:wrap;width:100%}.kpis div{border-left:3px solid var(--ochre);padding-left:10px}.kpis b{display:block;font-size:1.5rem}.kpis span{font-size:.8rem;color:var(--mut)}
+.heat{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;grid-template-rows:repeat(7,1fr);gap:4px;max-width:520px}
+.heat i{aspect-ratio:1;border-radius:3px;background:#e3e9ee}.heat .l1{background:#9fd3cb}.heat .l2{background:#4fb3a6}.heat .l3{background:#167d73}.heat .x{visibility:hidden}
+.en{padding:0;margin-bottom:10px}
+.en summary{display:flex;gap:14px;align-items:center;padding:14px 18px;cursor:pointer;list-style:none}.en summary::-webkit-details-marker{display:none}
+.en[open] summary{border-bottom:1px solid var(--line)}
+.en>:not(summary){margin:14px 18px}
+.dt{background:var(--ink);color:#fff;border-radius:4px;padding:6px 10px;font-size:.78rem;text-align:center;min-width:68px}
+blockquote{margin:14px 18px;border-left:5px solid var(--ochre);padding:4px 16px;font-size:1.15rem;font-style:italic}
+.blk{border:1px solid;border-radius:6px;padding:12px 16px}.A{background:#fbf3df;border-color:#ecd08a}.B{background:#e4f3f1;border-color:#9fd3cb}.C{background:#f4e5ee;border-color:#d9a7c2}
+.blk h4{margin-bottom:6px}.blk p{white-space:pre-wrap;margin:.5rem 0}
+.acts{display:flex;gap:8px}.acts button{border:1px solid var(--line);background:#fff;border-radius:4px;padding:5px 14px;cursor:pointer}.danger{color:var(--brick)}
+.btn{background:var(--ochre);color:var(--ink);border:0;border-radius:4px;padding:11px 22px;font-weight:800;cursor:pointer}.btn.sm{padding:7px 14px;font-size:.9rem}.btn:disabled{opacity:.5}
+.ghost{background:transparent;color:#fff;border:1px solid #ffffff55;border-radius:4px;padding:7px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+.link{background:none;border:0;color:var(--teal);cursor:pointer;padding:12px 0 0;font-weight:600}
+dialog{border:0;border-radius:10px;padding:26px;width:min(680px,94vw);max-height:92vh;overflow:auto;color:var(--ink)}dialog::backdrop{background:#14213dd9}
+.x{position:absolute;right:14px;top:14px;border:0;background:#e3e9ee;border-radius:50%;width:32px;height:32px;cursor:pointer}
+fieldset{margin:18px 0}legend{font:800 1.05rem "Bricolage Grotesque",sans-serif;padding:0 8px}
+label{display:block;margin:12px 0;font-weight:600}label small{display:block;font-weight:400}
+input,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:6px;background:#fff;margin-top:4px;color:var(--ink)}
+.er{color:var(--brick);min-height:1.5em;margin:6px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,90px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:6px;transition:transform .25s;z-index:9}#toast.show{transform:translate(-50%,0)}
+.empty{padding:40px 10px;color:var(--mut)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap top"><span class="logo">📖 Jurnal Refleksi</span><div id="bar"></div></div>
+  <div class="wrap">
+    <h1>Jurnal Refleksi Membaca</h1>
+    <p>Catat insight dari tiap buku, jaga streak harian, dan lihat apa yang sedang dibaca orang lain.</p>
+    <p id="sum"></p>
+  </div>
+  <div class="plank"><div class="wrap shelf" id="hs"></div></div>
+</header>
+<main class="wrap" id="app"><div class="empty">Memuat data…</div></main>
+<dialog id="dAuth"></dialog><dialog id="dForm"></dialog>
+<div id="toast" role="status"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,query,orderBy,limit,writeBatch,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{firebaseConfig}from"./firebase-config.js";
+
+const db=getFirestore(initializeApp(firebaseConfig));
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,"0")).join("");
+const slug=n=>n.trim().toLowerCase().replace(/\s+/g,"-").replace(/[^\p{L}\p{N}-]/gu,"");
+const hue=s=>Math.abs([...s].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7))%360;
+const fmt=d=>new Date(d+"T00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"2-digit"});
+const SP=[["#1f7f74","#fff"],["#e9b44c","#14213d"],["#8e3b66","#fff"],["#b8472f","#fff"],["#3a6fb0","#fff"],["#557a3c","#fff"]];
+
+/* Struktur jurnal: [kunci, label, tipe(d/t/n/a), petunjuk] */
+const F=[
+["A","Identitas Bacaan",[["date","Tanggal","d"],["book","Judul buku","t"],["author","Nama penulis","t"],["pages","Bab atau halaman","t"],["min","Durasi membaca (menit)","n"]]],
+["B","Memahami Bacaan",[
+["idea","1. Gagasan utama","a","Apa inti pembahasan yang disampaikan penulis? Tuliskan dengan singkat."],
+["own","2. Pemahaman pribadi","a","Jelaskan dengan bahasamu sendiri, seolah-olah sedang mengajarkannya kepada orang lain."],
+["agree","3. Apakah aku setuju dengan gagasan tersebut?","a"],["why","Mengapa aku setuju atau tidak setuju?","a"],["alt","Adakah sudut pandang lain yang belum dibahas penulis?","a"],
+["exp","4. Apakah aku pernah mengalami hal serupa?","a"],["know","Apakah ini berhubungan dengan pengetahuan yang sudah kumiliki?","a"],["use","Di mana penerapannya dalam kehidupan nyata?","a"],
+["new","5. Apa hal baru yang aku pelajari?","a"],["shift","Apakah ada perubahan dalam cara berpikirku?","a"],["apply","Bagaimana aku bisa menerapkannya?","a"]]],
+["C","Refleksi Pribadi",[
+["fav","1. Hal paling menarik dari bacaan hari ini","a"],["unk","2. Apa yang masih belum aku pahami?","a"],["q","3. Satu pertanyaan yang ingin kucari jawabannya","a"]]]];
+
+let me=null;try{me=JSON.parse(localStorage.getItem("jrm"))}catch{}
+const S={me,h:me?.h,entries:[],profiles:[],who:decodeURIComponent(location.hash.slice(1))||null};
+const toast=m=>{const t=$("#toast");t.textContent=m;t.className="show";setTimeout(()=>t.className="",2800)};
+
+/* Streak */
+const streak=set=>{let d=new Date(),s=0;if(!set.has(ymd(d)))d.setDate(d.getDate()-1);while(set.has(ymd(d))){s++;d.setDate(d.getDate()-1)}return s};
+const best=set=>{let b=0,c=0,p=null;for(const x of [...set].sort()){c=p&&new Date(x)-new Date(p)===864e5?c+1:1;b=Math.max(b,c);p=x}return b};
+const stats=id=>{const es=S.entries.filter(e=>e.owner===id),days=new Set(es.map(e=>e.date));
+  return{es,days,streak:streak(days),best:best(days),min:es.reduce((a,e)=>a+(+e.min||0),0),
+  books:[...es.reduce((m,e)=>{const b=e.book.trim();return m.set(b,(m.get(b)||0)+1)},new Map())]}};
+
+/* Komponen tampilan */
+const av=(p,c="")=>`<span class="av ${c}" style="--h:${hue(p.id)}">${esc([...p.name][0].toUpperCase())}</span>`;
+const rib=n=>`<div class="rib" title="Streak harian">${n}<small>hari</small></div>`;
+const shelf=l=>l.length?l.map(([b,o])=>{const k=hue(b),[bg,fg]=SP[k%SP.length];return`<button class="sp" data-who="${esc(o)}" title="${esc(b)}" style="--c:${bg};color:${fg};--h:${96+k%64}px;--w:${34+k%16}px">${esc(b)}</button>`}).join(""):`<p style="color:#8fa3c2;padding-bottom:18px;margin:0">Rak masih kosong. Jurnal pertamamu akan jadi buku pertama di sini.</p>`;
+const dots=days=>Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);return`<i class="${days.has(ymd(d))?"on":""}"></i>`}).join("");
+const heat=es=>{const c={};es.forEach(e=>c[e.date]=(c[e.date]||0)+1);const s=new Date();s.setDate(s.getDate()-83);
+  let h='<i class="x"></i>'.repeat(s.getDay());
+  for(let i=0;i<84;i++){const d=new Date(s);d.setDate(s.getDate()+i);const n=c[ymd(d)]||0;h+=`<i class="l${Math.min(n,3)}" title="${ymd(d)}: ${n} jurnal"></i>`}
+  return`<div class="heat">${h}</div>`};
+const chip=b=>`<span class="chip" style="--c:${SP[hue(b)%SP.length][0]}">${esc(b)}</span>`;
+
+const entry=(e,mine)=>`<details class="card en"><summary><span class="dt">${fmt(e.date)}</span><div><h3>${esc(e.book)}</h3><small>${[e.author,e.pages,e.min&&e.min+" menit"].filter(Boolean).map(esc).join(", ")}</small></div></summary>
+${e.idea?`<blockquote>${esc(e.idea)}</blockquote>`:""}
+${F.slice(1).map(([k,t,fs])=>{const r=fs.filter(f=>e[f[0]]&&f[0]!=="idea");return r.length?`<div class="blk ${k}"><h4>${k}. ${t}</h4>${r.map(f=>`<p><b>${esc(f[1])}</b><br>${esc(e[f[0]])}</p>`).join("")}</div>`:""}).join("")}
+${mine?`<div class="acts"><button data-edit="${e.id}">Ubah</button><button class="danger" data-del="${e.id}">Hapus</button></div>`:""}</details>`;
+
+function home(){
+  const rs=S.profiles.map(p=>({p,s:stats(p.id)})).sort((a,b)=>b.s.streak-a.s.streak||b.s.es.length-a.s.es.length);
+  return`<h2 class="sec">Para pembaca</h2>`+(rs.length?`<div class="grid">${rs.map(({p,s})=>`<article class="card rd" data-who="${esc(p.id)}">${rib(s.streak)}
+  <div class="row">${av(p)}<div><h3>${esc(p.name)}</h3><small>${s.es.length} jurnal, ${s.min} menit</small></div></div>
+  <div class="dots" title="14 hari terakhir">${dots(s.days)}</div><div class="chips">${s.books.slice(0,3).map(([b])=>chip(b)).join("")}${s.books.length>3?`<small>+${s.books.length-3} buku</small>`:""}</div></article>`).join("")}</div>`
+  :`<div class="empty">Belum ada pembaca. Daftar dan tulis jurnal pertamamu.</div>`)}
+
+function reader(id){
+  const p=S.profiles.find(x=>x.id===id),back='<button class="link" data-go="">Kembali ke semua pembaca</button>';
+  if(!p)return back+'<div class="empty">Pembaca tidak ditemukan.</div>';
+  const s=stats(id),mine=S.me?.id===id,today=s.days.has(ymd(new Date()));
+  return`${back}<section class="card prof" style="margin-top:12px">${rib(s.streak)}${av(p,"big")}<div><h2>${esc(p.name)}</h2><small>${today?"Hari ini sudah menulis.":"Belum menulis hari ini."}</small></div>
+  <div class="kpis">${[[s.streak,"streak saat ini"],[s.best,"streak terbaik"],[s.es.length,"jurnal"],[s.books.length,"buku"],[s.min,"menit membaca"]].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join("")}</div></section>
+  <h3 class="sec">Aktivitas 12 minggu</h3><div class="card">${heat(s.es)}</div>
+  <h3 class="sec">Rak buku</h3><div class="dark"><div class="shelf">${shelf(s.books.map(([b])=>[b,id]))}</div></div><div class="plank"></div>
+  <h3 class="sec">Jurnal</h3>${s.es.map(e=>entry(e,mine)).join("")||'<div class="empty">Belum ada jurnal.</div>'}`}
+
+function render(){
+  $("#bar").innerHTML=S.me?`<button class="ghost" data-go="${esc(S.me.id)}">${esc(S.me.name)}</button><button class="btn sm" data-new>Tulis jurnal</button><button class="ghost" data-out>Keluar</button>`
+    :`<button class="ghost" data-auth="in">Masuk</button><button class="btn sm" data-auth="up">Daftar</button>`;
+  const tot=S.entries.reduce((a,e)=>a+(+e.min||0),0);
+  $("#sum").textContent=`${S.profiles.length} pembaca menulis ${S.entries.length} jurnal dengan total ${tot.toLocaleString("id-ID")} menit membaca.`;
+  $("#hs").innerHTML=shelf([...new Map(S.entries.map(e=>[e.book.trim().toLowerCase(),[e.book.trim(),e.owner]])).values()].slice(0,30));
+  $("#app").innerHTML=S.who?reader(S.who):home();
+}
+
+async function load(){
+  try{
+    const[p,e]=await Promise.all([getDocs(collection(db,"profiles")),getDocs(query(collection(db,"entries"),orderBy("date","desc"),limit(1000)))]);
+    S.profiles=p.docs.map(d=>({id:d.id,...d.data()}));S.entries=e.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(x){$("#app").innerHTML=`<div class="empty">Data belum bisa dimuat. Periksa <b>firebase-config.js</b> dan aturan Firestore di README.<br><small>${esc(x.message)}</small></div>`;return}
+  render()}
+
+const go=id=>{location.hash=encodeURIComponent(id);S.who=id||null;render();scrollTo(0,0)};
+addEventListener("hashchange",()=>{S.who=decodeURIComponent(location.hash.slice(1))||null;render()});
+
+/* Masuk / daftar: nama + PIN. Hash PIN diverifikasi oleh aturan Firestore (lihat firestore.rules) */
+function openAuth(m){const a=$("#dAuth"),up=m==="up";
+  a.innerHTML=`<form id="fa" data-m="${m}"><button type="button" class="x" data-close aria-label="Tutup">✕</button><h2>${up?"Daftar pembaca baru":"Masuk"}</h2>
+  <p class="mut">${up?"Pilih nama dan PIN 4–6 angka. PIN tidak bisa direset, jadi catat baik-baik.":"Masukkan nama dan PIN-mu."}</p>
+  <label>Nama<input name="n" required maxlength="24" autocomplete="username"></label>
+  <label>PIN<input name="p" type="password" inputmode="numeric" pattern="\\d{4,6}" required maxlength="6" autocomplete="${up?"new-password":"current-password"}"></label>
+  <p class="er" id="er"></p><button class="btn">${up?"Daftar dan mulai":"Masuk"}</button>
+  <button type="button" class="link" data-auth="${up?"in":"up"}">${up?"Sudah punya nama? Masuk":"Belum punya nama? Daftar"}</button></form>`;
+  a.showModal()}
+
+async function auth(f){
+  const n=f.n.value.trim(),p=f.p.value,id=slug(n),er=$("#er"),up=f.dataset.m==="up";
+  if(id.length<2||!/^\d{4,6}$/.test(p))return er.textContent="Nama minimal 2 karakter dan PIN 4–6 angka.";
+  const h=await sha(`jrm:${id}:${p}`);
+  try{
+    if(up){
+      if((await getDoc(doc(db,"profiles",id))).exists())return er.textContent="Nama sudah dipakai. Coba nama lain.";
+      const b=writeBatch(db);b.set(doc(db,"secrets",id),{h});b.set(doc(db,"gate",id),{h,t:serverTimestamp()});b.set(doc(db,"profiles",id),{name:n,createdAt:serverTimestamp()});await b.commit();
+      S.me={id,name:n}
+    }else{
+      await setDoc(doc(db,"gate",id),{h,t:serverTimestamp()});
+      S.me={id,name:(await getDoc(doc(db,"profiles",id))).data().name}
+    }
+  }catch{return er.textContent=up?"Pendaftaran gagal. Coba nama lain.":"Nama atau PIN salah."}
+  S.h=h;localStorage.setItem("jrm",JSON.stringify({...S.me,h}));$("#dAuth").close();toast(`Halo, ${S.me.name}!`);await load();go(id)}
+
+/* Form jurnal */
+function openForm(e={}){const f=$("#dForm");
+  f.innerHTML=`<form id="fj"><button type="button" class="x" data-close aria-label="Tutup">✕</button><h2>${e.id?"Ubah jurnal":"Tulis jurnal"}</h2>`+
+  F.map(([k,t,fs])=>`<fieldset class="blk ${k}"><legend>${k}. ${t}</legend>${fs.map(([n,l,ty,h])=>`<label>${l}${h?`<small>${h}</small>`:""}${ty==="a"?`<textarea name="${n}" rows="3">${esc(e[n])}</textarea>`
+  :`<input name="${n}" type="${{d:"date",n:"number"}[ty]||"text"}" value="${esc(e[n]??(n==="date"?ymd(new Date()):""))}" ${n==="date"||n==="book"?"required":""} ${ty==="n"?'min="0"':""}>`}</label>`).join("")}</fieldset>`).join("")+
+  `<button class="btn">Simpan jurnal</button></form>`;
+  f.dataset.id=e.id||"";f.showModal()}
+
+const gate=b=>b.set(doc(db,"gate",S.me.id),{h:S.h,t:serverTimestamp()});
+async function saveEntry(fd,id){
+  const d=Object.fromEntries(fd);d.min=+d.min||0;const b=writeBatch(db);gate(b);
+  if(id)b.update(doc(db,"entries",id),d);else b.set(doc(collection(db,"entries")),{...d,owner:S.me.id,name:S.me.name,createdAt:serverTimestamp()});
+  await b.commit()}
+
+document.addEventListener("click",async e=>{
+  const t=e.target.closest("[data-who],[data-go],[data-auth],[data-new],[data-out],[data-edit],[data-del],[data-close]");if(!t)return;const d=t.dataset;
+  try{
+    if("who"in d)go(d.who);
+    else if("go"in d)go(d.go);
+    else if("auth"in d)openAuth(d.auth);
+    else if("new"in d)openForm();
+    else if("close"in d)t.closest("dialog").close();
+    else if("out"in d){S.me=S.h=null;localStorage.removeItem("jrm");render();toast("Sampai jumpa!")}
+    else if("edit"in d)openForm(S.entries.find(x=>x.id===d.edit));
+    else if("del"in d&&confirm("Hapus jurnal ini?")){const b=writeBatch(db);gate(b);b.delete(doc(db,"entries",d.del));await b.commit();toast("Jurnal dihapus");await load()}
+  }catch(x){toast("Gagal: "+(x.code||x.message))}});
+
+document.addEventListener("submit",async e=>{
+  e.preventDefault();const f=e.target,btn=f.querySelector(".btn");btn.disabled=true;
+  try{
+    if(f.id==="fa")await auth(f);
+    else{await saveEntry(new FormData(f),$("#dForm").dataset.id);$("#dForm").close();toast("Jurnal tersimpan");await load()}
+  }catch(x){toast(x.code==="permission-denied"?"Akses ditolak. Coba keluar lalu masuk lagi.":"Gagal menyimpan: "+(x.code||x.message))}
+  finally{btn.disabled=false}});
+
+load();
+</script>
+</body>
+</html>

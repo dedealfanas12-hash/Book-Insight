@@ -2,40 +2,45 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
 
-    // Nama pemilik sesi perangkat ini (hanya ada jika PIN-nya sudah terbukti benar)
-    function owner() {
-      return get(/databases/$(db)/documents/sessions/$(request.auth.uid)).data.owner;
+    // Benar jika perangkat ini punya sesi untuk nama n DAN hash PIN di sesi masih sama dengan
+    // hash di "secrets". Sesi lama di perangkat lain otomatis tidak berlaku jika akun dihapus
+    // atau nama itu didaftarkan ulang.
+    function isOwner(n) {
+      let s = get(/databases/$(db)/documents/sessions/$(request.auth.uid)).data;
+      return s.owner == n && s.h == get(/databases/$(db)/documents/secrets/$(n)).data.h;
     }
 
-    // Hash PIN: dibuat sekali saat daftar, tidak bisa dibaca atau diubah siapa pun.
+    // Hash PIN: dibuat sekali saat daftar, tidak bisa dibaca; hanya pemilik yang boleh menghapus.
     match /secrets/{n} {
       allow create: if request.auth != null
         && !exists(/databases/$(db)/documents/secrets/$(n))
         && request.resource.data.h is string
         && request.resource.data.h.size() == 64;
+      allow delete: if request.auth != null && isOwner(n);
     }
 
-    // Sesi: hanya bisa dibuat jika hash PIN cocok. Tidak bisa dibaca klien.
+    // Sesi perangkat: hanya bisa dibuat jika hash PIN cocok. Tidak bisa dibaca klien.
     match /sessions/{uid} {
-      allow create, update: if request.auth != null
-        && request.auth.uid == uid
+      allow create, update: if request.auth != null && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['owner', 'h'])
         && request.resource.data.h == get(/databases/$(db)/documents/secrets/$(request.resource.data.owner)).data.h;
+      allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Profil dan jurnal: semua orang boleh melihat, menulis butuh sesi yang valid.
+    // Profil dan jurnal: semua orang boleh melihat, menulis/menghapus butuh sesi yang valid.
     match /profiles/{n} {
       allow read: if true;
-      allow create: if request.auth != null && owner() == n
+      allow create: if request.auth != null && isOwner(n)
         && !exists(/databases/$(db)/documents/profiles/$(n));
+      allow delete: if request.auth != null && isOwner(n);
     }
 
     match /entries/{id} {
       allow read: if true;
-      allow create: if request.auth != null && owner() == request.resource.data.owner;
-      allow update: if request.auth != null && owner() == resource.data.owner
+      allow create: if request.auth != null && isOwner(request.resource.data.owner);
+      allow update: if request.auth != null && isOwner(resource.data.owner)
         && request.resource.data.owner == resource.data.owner;
-      allow delete: if request.auth != null && owner() == resource.data.owner;
+      allow delete: if request.auth != null && isOwner(resource.data.owner);
     }
   }
 }

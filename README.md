@@ -39,3 +39,10 @@ Kotak masuk/daftar menampilkan langkah yang gagal beserta kode errornya.
 - PIN 4–6 angka bisa ditebak lewat percobaan berulang karena tidak ada pembatasan percobaan. Cocok untuk komunitas kecil, bukan data sensitif.
 - PIN tidak bisa direset. Kalau lupa, daftar dengan nama baru, atau hapus dokumen `secrets/nama` dan `profiles/nama` lewat Firebase Console.
 - Belum diuji pada proyek Firebase sungguhan.
+
+## Hapus akun
+
+Pemilik akun bisa menghapus akunnya dari halaman profilnya sendiri (bagian paling bawah, perlu memasukkan PIN).
+Yang terhapus permanen: profil, seluruh jurnal, hash PIN, dan sesi perangkat. Nama tersebut bisa didaftarkan ulang.
+Aturan Firestore memastikan sesi lama di perangkat lain otomatis tidak berlaku setelah akun dihapus.
+Setiap kali `firestore.rules` berubah, tempel ulang isinya di Firebase Console → Firestore → Rules → Publish.

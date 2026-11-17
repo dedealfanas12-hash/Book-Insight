@@ -83,7 +83,7 @@ input,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--line);border
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getFirestore,collection,doc,getDoc,getDocs,setDoc,query,orderBy,limit,addDoc,updateDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,query,orderBy,limit,where,writeBatch,addDoc,updateDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import{firebaseConfig}from"./firebase-config.js";
 
@@ -152,7 +152,7 @@ function reader(id){
   <div class="kpis">${[[s.streak,"streak saat ini"],[s.best,"streak terbaik"],[s.es.length,"jurnal"],[s.books.length,"buku"],[s.min,"menit membaca"]].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join("")}</div></section>
   <h3 class="sec">Jurnal</h3>${s.es.map(e=>entry(e,mine)).join("")||'<div class="empty">Belum ada jurnal.</div>'}
   <h3 class="sec">Rak buku</h3><div class="dark"><div class="shelf">${shelf(s.books.map(([b])=>[b,id]))}</div></div><div class="plank"></div>
-  <h3 class="sec">Aktivitas 12 minggu</h3><div class="card">${heat(s.es)}</div>`}
+  <h3 class="sec">Aktivitas 12 minggu</h3><div class="card">${heat(s.es)}</div>${mine?'<h3 class="sec">Akun</h3><div class="card"><p class="mut" style="margin-top:0">Menghapus akun menghapus profil, semua jurnal, dan PIN secara permanen.</p><div class="acts"><button class="danger" data-delacc>Hapus akun</button></div></div>':""}`}
 
 function render(){
   $("#bar").innerHTML=S.me?`<button class="ghost" data-go="${esc(S.me.id)}">${esc(S.me.name)}</button><button class="btn sm" data-new>Tulis jurnal</button><button class="ghost" data-out>Keluar</button>`
@@ -221,8 +221,28 @@ async function saveEntry(fd,id){
   await ready();
   if(id)await updateDoc(doc(db,"entries",id),d);else await addDoc(collection(db,"entries"),{...d,owner:S.me.id,name:S.me.name,createdAt:serverTimestamp()})}
 
+function openDel(){const a=$("#dAuth");
+  a.innerHTML=`<form id="fd"><button type="button" class="x" data-close aria-label="Tutup">✕</button><h2>Hapus akun</h2>
+  <p>Ini menghapus <b>permanen</b> profil <b>${esc(S.me.name)}</b>, seluruh jurnalnya, dan PIN-nya. Data tidak bisa dikembalikan, dan nama ini bisa didaftarkan ulang oleh siapa pun.</p>
+  <label>Masukkan PIN untuk konfirmasi<input name="p" type="password" inputmode="numeric" pattern="\\d{4,6}" required maxlength="6" autocomplete="current-password"></label>
+  <p class="er" id="er"></p><button class="btn" style="background:var(--brick);color:#fff">Hapus akun saya</button></form>`;
+  a.showModal()}
+
+async function delAccount(f){
+  const er=$("#er"),id=S.me.id,h=await sha(`jrm:${id}:${f.p.value}`);let step="cek PIN";
+  try{
+    const uid=(await ready()).user.uid;
+    await setDoc(doc(db,"sessions",uid),{owner:id,h});
+    step="hapus jurnal";
+    const ds=(await getDocs(query(collection(db,"entries"),where("owner","==",id)))).docs;
+    for(let i=0;i<ds.length;i+=25)await Promise.all(ds.slice(i,i+25).map(d=>deleteDoc(d.ref)));
+    step="hapus akun";
+    const b=writeBatch(db);b.delete(doc(db,"profiles",id));b.delete(doc(db,"secrets",id));b.delete(doc(db,"sessions",uid));await b.commit();
+  }catch(x){console.error(step,x);return er.textContent=step==="cek PIN"&&x.code==="permission-denied"?"PIN salah.":`Gagal pada langkah "${step}": ${x.code||x.message}`}
+  S.me=S.h=null;localStorage.removeItem("jrm");$("#dAuth").close();toast("Akun dihapus.");S.who=null;location.hash="";await load()}
+
 document.addEventListener("click",async e=>{
-  const t=e.target.closest("[data-who],[data-go],[data-auth],[data-new],[data-out],[data-edit],[data-del],[data-close]");if(!t)return;const d=t.dataset;
+  const t=e.target.closest("[data-who],[data-go],[data-auth],[data-new],[data-out],[data-edit],[data-del],[data-delacc],[data-close]");if(!t)return;const d=t.dataset;
   try{
     if("who"in d)go(d.who);
     else if("go"in d)go(d.go);
@@ -230,6 +250,7 @@ document.addEventListener("click",async e=>{
     else if("new"in d)openForm();
     else if("close"in d)t.closest("dialog").close();
     else if("out"in d){S.me=S.h=null;localStorage.removeItem("jrm");render();toast("Sampai jumpa!")}
+    else if("delacc"in d)openDel();
     else if("edit"in d)openForm(S.entries.find(x=>x.id===d.edit));
     else if("del"in d&&confirm("Hapus jurnal ini?")){await ready();await deleteDoc(doc(db,"entries",d.del));toast("Jurnal dihapus");await load()}
   }catch(x){toast("Gagal: "+(x.code||x.message))}});
@@ -238,6 +259,7 @@ document.addEventListener("submit",async e=>{
   e.preventDefault();const f=e.target,btn=f.querySelector(".btn");btn.disabled=true;const lb=btn.textContent;btn.textContent="Memproses…";
   try{
     if(f.id==="fa")await auth(f);
+    else if(f.id==="fd")await delAccount(f);
     else{if(await saveEntry(new FormData(f),$("#dForm").dataset.id)===false)return;$("#dForm").close();toast("Jurnal tersimpan");await load()}
   }catch(x){toast(x.code==="permission-denied"?"Akses ditolak. Coba keluar lalu masuk lagi.":"Gagal menyimpan: "+(x.code||x.message))}
   finally{btn.disabled=false;btn.textContent=lb}});

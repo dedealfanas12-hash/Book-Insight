@@ -83,10 +83,11 @@ input,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--line);border
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getFirestore,collection,doc,getDoc,getDocs,setDoc,query,orderBy,limit,writeBatch,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,query,orderBy,limit,addDoc,updateDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import{firebaseConfig}from"./firebase-config.js";
 
-const db=getFirestore(initializeApp(firebaseConfig));
+const app=initializeApp(firebaseConfig),db=getFirestore(app),au=getAuth(app),ready=()=>signInAnonymously(au);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -110,6 +111,7 @@ const F=[
 
 let me=null;try{me=JSON.parse(localStorage.getItem("jrm"))}catch{}
 const S={me,h:me?.h,entries:[],profiles:[],who:decodeURIComponent(location.hash.slice(1))||null};
+addEventListener("unhandledrejection",e=>toast("Terjadi kesalahan: "+(e.reason?.code||e.reason?.message||"tidak diketahui")));
 const toast=m=>{const t=$("#toast");t.textContent=m;t.className="show";setTimeout(()=>t.className="",2800)};
 
 /* Streak */
@@ -162,10 +164,11 @@ function render(){
 }
 
 async function load(){
+  const tm=setTimeout(()=>{$("#app").innerHTML='<div class="empty">Memuat lebih lama dari biasanya. Periksa koneksi internet, <b>firebase-config.js</b>, dan apakah Firestore sudah dibuat. Detail ada di Console browser (F12).</div>'},10000);
   try{
     const[p,e]=await Promise.all([getDocs(collection(db,"profiles")),getDocs(query(collection(db,"entries"),orderBy("date","desc"),limit(1000)))]);
     S.profiles=p.docs.map(d=>({id:d.id,...d.data()}));S.entries=e.docs.map(d=>({id:d.id,...d.data()}));
-  }catch(x){$("#app").innerHTML=`<div class="empty">Data belum bisa dimuat. Periksa <b>firebase-config.js</b> dan aturan Firestore di README.<br><small>${esc(x.message)}</small></div>`;return}
+  }catch(x){render();$("#app").innerHTML=`<div class="empty">Data belum bisa dimuat. Periksa <b>firebase-config.js</b> dan aturan Firestore di README.<br><small>${esc(x.message)}</small></div>`;return}finally{clearTimeout(tm)}
   render()}
 
 const go=id=>{location.hash=encodeURIComponent(id);S.who=id||null;render();scrollTo(0,0)};
@@ -184,18 +187,24 @@ function openAuth(m){const a=$("#dAuth"),up=m==="up";
 async function auth(f){
   const n=f.n.value.trim(),p=f.p.value,id=slug(n),er=$("#er"),up=f.dataset.m==="up";
   if(id.length<2||!/^\d{4,6}$/.test(p))return er.textContent="Nama minimal 2 karakter dan PIN 4–6 angka.";
-  const h=await sha(`jrm:${id}:${p}`);
+  const h=await sha(`jrm:${id}:${p}`);let step="login anonim";
   try{
+    const uid=(await ready()).user.uid;
     if(up){
-      if((await getDoc(doc(db,"profiles",id))).exists())return er.textContent="Nama sudah dipakai. Coba nama lain.";
-      const b=writeBatch(db);b.set(doc(db,"secrets",id),{h});b.set(doc(db,"gate",id),{h,t:serverTimestamp()});b.set(doc(db,"profiles",id),{name:n,createdAt:serverTimestamp()});await b.commit();
+      step="cek nama";if((await getDoc(doc(db,"profiles",id))).exists())return er.textContent="Nama sudah dipakai. Coba nama lain.";
+      step="simpan PIN";await setDoc(doc(db,"secrets",id),{h});
+      step="buat sesi";await setDoc(doc(db,"sessions",uid),{owner:id,h});
+      step="buat profil";await setDoc(doc(db,"profiles",id),{name:n,createdAt:serverTimestamp()});
       S.me={id,name:n}
     }else{
-      await setDoc(doc(db,"gate",id),{h,t:serverTimestamp()});
-      S.me={id,name:(await getDoc(doc(db,"profiles",id))).data().name}
+      step="cek PIN";await setDoc(doc(db,"sessions",uid),{owner:id,h});
+      step="baca profil";const pr=await getDoc(doc(db,"profiles",id));
+      if(!pr.exists())await setDoc(doc(db,"profiles",id),{name:n,createdAt:serverTimestamp()});
+      S.me={id,name:pr.data()?.name||n}
     }
-  }catch{return er.textContent=up?"Pendaftaran gagal. Coba nama lain.":"Nama atau PIN salah."}
-  S.h=h;localStorage.setItem("jrm",JSON.stringify({...S.me,h}));$("#dAuth").close();toast(`Halo, ${S.me.name}!`);await load();go(id)}
+  }catch(x){console.error(step,x);
+    return er.textContent=step==="cek PIN"&&x.code==="permission-denied"?"Nama atau PIN salah.":step==="login anonim"?`Aktifkan Anonymous di Firebase → Authentication → Sign-in method (${x.code}).`:`Gagal pada langkah "${step}": ${x.code||x.message}`}
+  localStorage.setItem("jrm",JSON.stringify(S.me));$("#dAuth").close();toast(`Halo, ${S.me.name}!`);await load();go(id)}
 
 /* Form jurnal */
 function openForm(e={}){const f=$("#dForm");
@@ -205,11 +214,12 @@ function openForm(e={}){const f=$("#dForm");
   `<button class="btn">Simpan jurnal</button></form>`;
   f.dataset.id=e.id||"";f.showModal()}
 
-const gate=b=>b.set(doc(db,"gate",S.me.id),{h:S.h,t:serverTimestamp()});
 async function saveEntry(fd,id){
-  const d=Object.fromEntries(fd);d.min=+d.min||0;const b=writeBatch(db);gate(b);
-  if(id)b.update(doc(db,"entries",id),d);else b.set(doc(collection(db,"entries")),{...d,owner:S.me.id,name:S.me.name,createdAt:serverTimestamp()});
-  await b.commit()}
+  const d=Object.fromEntries(fd);d.min=+d.min||0;d.book=d.book.trim();
+  if(d.date>ymd(new Date())){toast("Tanggal tidak boleh di masa depan.");return false}
+  if(!id&&S.entries.some(x=>x.owner===S.me.id&&x.date===d.date&&x.book.trim().toLowerCase()===d.book.toLowerCase()&&(x.pages||"")===(d.pages||""))&&!confirm("Sudah ada jurnal dengan buku, tanggal, dan bab/halaman yang sama. Tetap simpan?"))return false;
+  await ready();
+  if(id)await updateDoc(doc(db,"entries",id),d);else await addDoc(collection(db,"entries"),{...d,owner:S.me.id,name:S.me.name,createdAt:serverTimestamp()})}
 
 document.addEventListener("click",async e=>{
   const t=e.target.closest("[data-who],[data-go],[data-auth],[data-new],[data-out],[data-edit],[data-del],[data-close]");if(!t)return;const d=t.dataset;
@@ -221,16 +231,16 @@ document.addEventListener("click",async e=>{
     else if("close"in d)t.closest("dialog").close();
     else if("out"in d){S.me=S.h=null;localStorage.removeItem("jrm");render();toast("Sampai jumpa!")}
     else if("edit"in d)openForm(S.entries.find(x=>x.id===d.edit));
-    else if("del"in d&&confirm("Hapus jurnal ini?")){const b=writeBatch(db);gate(b);b.delete(doc(db,"entries",d.del));await b.commit();toast("Jurnal dihapus");await load()}
+    else if("del"in d&&confirm("Hapus jurnal ini?")){await ready();await deleteDoc(doc(db,"entries",d.del));toast("Jurnal dihapus");await load()}
   }catch(x){toast("Gagal: "+(x.code||x.message))}});
 
 document.addEventListener("submit",async e=>{
-  e.preventDefault();const f=e.target,btn=f.querySelector(".btn");btn.disabled=true;
+  e.preventDefault();const f=e.target,btn=f.querySelector(".btn");btn.disabled=true;const lb=btn.textContent;btn.textContent="Memproses…";
   try{
     if(f.id==="fa")await auth(f);
-    else{await saveEntry(new FormData(f),$("#dForm").dataset.id);$("#dForm").close();toast("Jurnal tersimpan");await load()}
+    else{if(await saveEntry(new FormData(f),$("#dForm").dataset.id)===false)return;$("#dForm").close();toast("Jurnal tersimpan");await load()}
   }catch(x){toast(x.code==="permission-denied"?"Akses ditolak. Coba keluar lalu masuk lagi.":"Gagal menyimpan: "+(x.code||x.message))}
-  finally{btn.disabled=false}});
+  finally{btn.disabled=false;btn.textContent=lb}});
 
 load();
 </script>

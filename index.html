@@ -150,9 +150,9 @@ function reader(id){
   const s=stats(id),mine=S.me?.id===id,today=s.days.has(ymd(new Date()));
   return`${back}<section class="card prof" style="margin-top:12px">${rib(s.streak)}${av(p,"big")}<div><h2>${esc(p.name)}</h2><small>${today?"Hari ini sudah menulis.":"Belum menulis hari ini."}</small></div>
   <div class="kpis">${[[s.streak,"streak saat ini"],[s.best,"streak terbaik"],[s.es.length,"jurnal"],[s.books.length,"buku"],[s.min,"menit membaca"]].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join("")}</div></section>
+  <h3 class="sec">Jurnal</h3>${s.es.map(e=>entry(e,mine)).join("")||'<div class="empty">Belum ada jurnal.</div>'}
   <h3 class="sec">Aktivitas 12 minggu</h3><div class="card">${heat(s.es)}</div>
-  <h3 class="sec">Rak buku</h3><div class="dark"><div class="shelf">${shelf(s.books.map(([b])=>[b,id]))}</div></div><div class="plank"></div>
-  <h3 class="sec">Jurnal</h3>${s.es.map(e=>entry(e,mine)).join("")||'<div class="empty">Belum ada jurnal.</div>'}`}
+  <h3 class="sec">Rak buku</h3><div class="dark"><div class="shelf">${shelf(s.books.map(([b])=>[b,id]))}</div></div><div class="plank"></div>`}
 
 function render(){
   $("#bar").innerHTML=S.me?`<button class="ghost" data-go="${esc(S.me.id)}">${esc(S.me.name)}</button><button class="btn sm" data-new>Tulis jurnal</button><button class="ghost" data-out>Keluar</button>`
